@@ -79,6 +79,23 @@ load incognito
 list_tokens -u
 impersonate_token "USERNAME"
 
+### Runas
+
+Windows includes a useful command called RunAs that enables a user to run a program as a different user if credentials are known. If a user’s credentials are cached in the system, the Runas command can be run using the /savecred flag which will automatically authenticate and execute the command as that user.
+
+Check for cached credentials using the following command:
+
+cmdkey /list
+
+If you find the cached credentials of an administrator create a reverse shell or download one, transfer it to the machine and execute it with the following command to get admin access:
+
+runas /savecred /user:WORKGROUP\User "Shell to execute"
+
+Make sure to set up a listener to catch the connection;).
+
+For those who like to use tools for everything I recommend mimikatz and lasagne for these type of escalation attempts.
+
+
 
 
 
