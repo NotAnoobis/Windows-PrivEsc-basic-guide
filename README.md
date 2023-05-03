@@ -1,4 +1,4 @@
-# Windows-PrivEsc-full-guide
+# Windows-PrivEsc-full-guide UNDER DEVELOPMENT
 
 Hi Everybody! I made this repo to share the privilege escalation techniques I tend to use on Windows based systems. Most of the tools ore working perfectly in CTF like competitions/exams. Use them and the tools on your own responsability, if you mess up an an coorporative or your own system, that's gonna be your fault and not mine! Now let's get into it.
 
@@ -34,6 +34,7 @@ password-hunting
 
 findstr /si password *.txt *.ini *.config
 procdump.exe -accepteula -ma <proc_name_tasklist>
+Get-WinEvent -LogName "windows Powershell" | select -First 15 | Out-GridView
 
 service-enum
 
@@ -94,6 +95,49 @@ runas /savecred /user:WORKGROUP\User "Shell to execute"
 Make sure to set up a listener to catch the connection;).
 
 For those who like to use tools for everything I recommend mimikatz and lasagne for these type of escalation attempts.
+
+### Unattended Windows Installations
+
+Administrators who need to install Windows on multiple hosts can use Windows Deployment Services, enabling them to deploy a single operating system image to several hosts over the network. This type of installation is known as an unattended installation, as it doesn't require user interaction.An administrator account is necessary for performing the initial setup of such installations, which may result in the storage of the account information on the machine in one of the following locations:
+
+C:\Unattend.xml
+C:\Windows\Panther\Unattend.xml
+C:\Windows\Panther\Unattend\Unattend.xml
+C:\Windows\system32\sysprep.inf
+C:\Windows\system32\sysprep\sysprep.xml
+
+### Scheduled Tasks
+
+Check for scheduled tasks using schtasks. Use the following commands to retrive more information about the task:
+
+schtasks /query /tn $taskname$ /fo list /v
+
+For us there are two important parameters when setting up a scheduled task: the "Task to Run" parameter, which specifies what will be executed by the task, and the "Run As User" parameter, which determines the user account that will be used to run the task. If you can overwrite the binary of "Task to run" you can control what's gonna be executed. Check the permissions using icacls.
+
+icacls c:\tasks\randomtask.exe
+
+Rewrite it with a reverse shell of your choice and execute it with the following command or similar:
+
+schtasks /run /tn randomtask.exe
+
+### AlwaysInstallElevated
+
+Installer files for Windows, commonly referred to as .msi files, are utilized to install software applications onto a system. Normally, these files run with the same privilege level as the user who initiated the installation. Nevertheless, it's possible to adjust the configuration to allow them to run with elevated privileges from any user account, including unprivileged ones. As a result, it's feasible for a malicious MSI file to be generated that could execute with administrative privileges.
+
+Check for these two registers, both of them must be set to pull of this escalation path:
+
+reg query HKCU\SOFTWARE\Policies\Microsoft\Windows\Installer
+reg query HKLM\SOFTWARE\Policies\Microsoft\Windows\Installer
+
+Create a reverse shell and upload it to the victim machine and use the following command to execute it:
+
+msiexec /quiet /qn /i C:\Windows\Temp\malicious.msi
+
+
+
+
+
+
 
 
 
