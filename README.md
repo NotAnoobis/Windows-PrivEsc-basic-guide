@@ -1,4 +1,4 @@
-# Windows-PrivEsc-full-guide
+# Windows-PrivEsc-basic-guide
 
 
 Hi Everybody! I made this repo to share the privilege escalation techniques I tend to use on Windows based systems. Most of the tools are working perfectly in CTF like competitions/exams. Use them and the tools on your own responsability, if you mess up a coorporative or your own system, that's gonna be your fault and not mine! Now let's get into it.
