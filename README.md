@@ -38,9 +38,9 @@ Get-WinEvent -LogName "windows Powershell" | select -First 15 | Out-GridView
 
 ### service-enum
 
-sc query
-wmic service list brief
-sc query windefend
+sc queryex type= service      | checks for all the running services
+wmic service list brief       | checks for all the services
+sc query windefend            | check is WinDefender (AV) is running
 
 ### firewall-enum
 
@@ -112,7 +112,7 @@ C:\Windows\system32\sysprep\sysprep.xml
 
 Check for scheduled tasks using schtasks. Use the following commands to retrive more information about the task:
 
-schtasks /query /tn $taskname$ /fo list /v
+schtasks /query /tn $taskname /fo list /v
 
 For us there are two important parameters when setting up a scheduled task: the "Task to Run" parameter, which specifies what will be executed by the task, and the "Run As User" parameter, which determines the user account that will be used to run the task. If you can overwrite the binary of "Task to run" you can control what's gonna be executed. Check the permissions using icacls.
 
