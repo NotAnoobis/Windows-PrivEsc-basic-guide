@@ -201,6 +201,11 @@ You can crack the hashes using hashcat with the -m switch, the value of 1000 cor
 
 Note: When you see an open servive like apache, mysql or any other make sure to check the config files, logs and backup files for credentials stored in clear text. Sometimes you can find powershell scripts used for automatization (AV update, database checks...etc) with credentials inside as well.
 
+Alternatively you can save the hashes using:
+
+reg save hklm\system C:\Temp
+reg save hklm\sam C:\Temp
+
 
 ### Services
 
