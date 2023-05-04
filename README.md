@@ -1,17 +1,17 @@
 # Windows-PrivEsc-full-guide UNDER DEVELOPMENT
 
-Hi Everybody! I made this repo to share the privilege escalation techniques I tend to use on Windows based systems. Most of the tools ore working perfectly in CTF like competitions/exams. Use them and the tools on your own responsability, if you mess up an an coorporative or your own system, that's gonna be your fault and not mine! Now let's get into it.
+Hi Everybody! I made this repo to share the privilege escalation techniques I tend to use on Windows based systems. Most of the tools are working perfectly in CTF like competitions/exams. Use them and the tools on your own responsability, if you mess up a coorporative or your own system, that's gonna be your fault and not mine! Now let's get into it.
 
 ## Enumeration
 
-basic-enum
+### basic-enum
 
 hostname
 systeminfo
 systeminfo | findstr /B /C:"OS Name" /C:"OS Version" /C:"System Type"
 wmic qfe
 
-user-enum
+### user-enum
 
 whoami
 whoami /priv
@@ -22,7 +22,7 @@ net localgroup
 net localgroup "GROUPNAME"
 net accounts
 
-network-enum
+### network-enum
 
 ipconfig
 ipconfig /all
@@ -30,19 +30,19 @@ arp -a
 route print
 netstat -a
 
-password-hunting
+### password-hunting
 
 findstr /si password *.txt *.ini *.config
 procdump.exe -accepteula -ma <proc_name_tasklist>
 Get-WinEvent -LogName "windows Powershell" | select -First 15 | Out-GridView
 
-service-enum
+### service-enum
 
 sc query
 wmic service list brief
 sc query windefend
 
-firewall-enum
+### firewall-enum
 
 netsh advfirewall firewall dump
 netsh firewall show state
@@ -146,6 +146,70 @@ You can check each registry with the reg query command for more information.
 e.g: reg query "HKLM\Software\Microsoft\Windows NT\CurrentVersion\winlogon"
 
 Pretty time consuming doing it manually, but if nothing works give it a go, otherwise use automated tools for this task.
+
+If you have access, try to copy the SAM and the SYSTEM files to your machine and extract the hashes from them. After the extraction process, try to crack them or use them for pass-the-hash, over-the-hash...etc attacks. pth-winexe is a great utility when you can't crack the hash and want to access to a system.
+
+Both of them can be found in the following path:
+
+C:\Windows\System32\config
+
+I use mimikatz for dumping the hashes:
+
+mimikatz.exe                                  | Executing mimikatz
+log hash.txt                                  | Use this so the output of the next command will be saved in a text file called hash.txt
+lsadump::sam samfile.hiv systemfile.hiv       | use this to dump out the hashes.
+
+You can crack the hashes using hashcat with the -m switch, the value of 1000 corresponds with the NTLM hash type. Make sure to clean the poutput file and only leave the hashes inside.
+
+hashcat -m 1000 -a 0 hash.txt usr/share/wordlists/rockyou.txt
+
+Note: When you see an open servive like apache, mysql or any other make sure to check the config files, logs and backup files for credentials stored in clear text. Sometimes you can find powershell scripts used for automatization (AV update, database checks...etc) with credentials inside as well.
+
+
+### Services
+
+This is the most complicated one and it involves various attacks. Insecure Service Permissions, Unquoted Service Path, Weak Registry Permissions, Insecure Service Executables.... So, you are in a Windows system and you are looking at services, check if you have access any of the services, if you can restart them, if you can overwrite the binary which is executed when service starts, if you can overwrite the executable where a shortcut points...etc
+
+Look for services you have access and that are running with admin priviliges. Use the following command to list all the services:
+
+sc queryex type= service
+
+There is a Windows utility called accesschk.exe which I use to check what priviliges do I have. The most important one is SERVICE_CHANGE_CONFIG that tells us if we can modify the service.
+
+accesschk.exe /accepteula -uwcqv $username$ $service_name$
+
+Then I use sc query to check if the service is run by system, so we can elevate our priviliges. With sc query look at the value of BINARY_PATH_NAME if it has no quotes and the route has a space in it you can put an executable in one folder above it with the same name and it's gonna be executed first. This is problem of path finding, while using quotes Windows has an absolute path to the executable, if we don't use them Windows are gonna look for the executable folder by folder. I'll leave an example here: 
+
+C:\Program Files\Unquoted Path Service\vulnerable.exe
+
+In this example Windows will look for the vulnerable.exe file in the C folder files, then moves on to Program Files and so on. If we put a reverse shell named vulenarble.exe in the Program Files directory it's gonna be executed before the original binary.
+
+There are a lot of escalation vectors related to Windows services, I suggest that you create a reverse shell and look for shortcuts, places on the hard drive where you can write, services you can modify. If you can modify a service try to overwrite the executable, look for shortcuts, maybe you can overwrite the binary where the shortcut is pointed. Be creative and try harder! ;)
+
+### Scripts for automatization:
+
+winPEASany.exe
+
+Seatbelt.exe
+
+PowerUp.ps1   | Personal favorite!<3
+
+SharpUp.exe
+
+
+### Links:
+
+https://learn.microsoft.com/en-us/sysinternals/downloads/accesschk
+
+https://book.hacktricks.xyz/windows-hardening/windows-local-privilege-escalation
+
+https://tryhackme.com/room/windowsprivescarena
+
+https://github.com/carlospolop/PEASS-ng/tree/master/winPEAS/winPEASexe/binaries
+
+https://github.com/PowerShellMafia/PowerSploit/blob/master/Privesc/PowerUp.ps1
+
+
 
 
 
